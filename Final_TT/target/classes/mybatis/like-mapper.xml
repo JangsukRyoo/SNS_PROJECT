@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="like">
+	<resultMap type="likeDto" id="likeMap">
+		<result property="content" column="LIKE_CONTENT_NO"/>
+		<result property="users" column="LIKE_USERS_ID"/>
+		<result property="like_liked" column="LIKE_LIKED"/>
+	</resultMap>
+	
+	<insert id="like" parameterType="likeDto">
+		INSERT INTO "LIKE"
+		VALUES(#{content}, #{users}, 'like')
+	</insert>
+	
+	<delete id="dislike" parameterType="likeDto">
+		DELETE "LIKE"
+		WHERE LIKE_CONTENT_NO = #{content} AND LIKE_USERS_ID = #{users}
+	</delete>
+	
+	<select id="count" parameterType="int" resultType="int">
+		SELECT CONTENT_LIKE_COUNT
+		FROM CONTENT
+		WHERE CONTENT_NO = #{content}
+	</select>
+	
+	<update id="likeUpdate" parameterType="contentDto">
+		UPDATE CONTENT
+		SET CONTENT_LIKE_COUNT = #{content_like_count}
+		WHERE CONTENT_NO = #{content_no}
+	</update>
+	
+	<update id="dislikeUpdate" parameterType="contentDto">
+		UPDATE CONTENT
+		SET CONTENT_LIKE_COUNT = #{content_like_count}
+		WHERE CONTENT_NO = #{content_no}
+	</update>
+	
+	<select id="selectLike" parameterType="likeDto" resultType="string">
+		SELECT LIKE_LIKED
+		FROM "LIKE"
+		WHERE LIKE_CONTENT_NO = #{content} AND LIKE_USERS_ID = #{users}
+	</select>
+
+</mapper>

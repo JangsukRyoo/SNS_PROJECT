@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="timeline">
+
+	<resultMap type="contentDto" id="contentMap">
+		<result property="content_no" column="CONTENT_NO" />
+		<result property="content_photo" column="CONTENT_PHOTO" />
+		<result property="content_substance" column="CONTENT_SUBSTANCE" />
+		<result property="content_place_name" column="CONTENT_PLACE_NAME" />
+		<result property="content_place_lat" column="CONTENT_PLACE_LAT" />
+		<result property="content_place_lon" column="CONTENT_PLACE_LON" />
+		<result property="content_users_id" column="CONTENT_USERS_ID" />
+		<result property="content_comment_count" column="CONTENT_COMMENT_COUNT" />
+		<result property="content_like_count" column="CONTENT_LIKE_COUNT" />
+		<result property="content_hashtag" column="CONTENT_HASHTAG"/>
+		<result property="content_date" column="CONTENT_DATE" />
+		<collection property="followdto" resultMap="followMap"></collection>
+	</resultMap>
+
+	<resultMap type="followDto" id="followMap">
+		<result property="follow_id" column="FOLLOW_ID" />
+		<result property="follow_target" column="FOLLOW_TARGET" />
+	</resultMap>
+
+	<resultMap type="reDto" id="reMap">
+		<result property="re_no" column="RE_NO" />
+		<result property="substance" column="RE_SUBSTANCE" />
+		<result property="contentno" column="RE_CONTENT_NO" />
+		<result property="userid" column="RE_USERS_ID" />
+	</resultMap>
+	
+	<resultMap type="saveDto" id="saveMap">
+		<result property="save_content_no"  column="SAVE_CONTENT_NO" />
+		<result property="save_content_photo"  column="SAVE_CONTENT_PHOTO" />
+		<result property="save_content_substance"  column="SAVE_CONTENT_SUBSTANCE" />
+		<result property="save_content_place_name"  column="SAVE_CONTENT_PLACE_NAME" />
+		<result property="save_content_place_lat"  column="SAVE_CONTENT_PLACE_LAT" />
+		<result property="save_content_place_lon"  column="SAVE_CONTENT_PLACE_LON" />
+		<result property="save_content_users_id"  column="SAVE_CONTENT_USERS_ID" />
+		<result property="save_content_hashtag"  column="SAVE_CONTENT_HASHTAG" />
+		<result property="save_content_date"  column="SAVE_CONTENT_DATE" />
+		<result property="save_user_id"  column="SAVE_USER_ID" />
+	</resultMap>
+	
+	<resultMap type="liveDto" id="liveMap">
+		<result property="live_user_id" column="LIVE_USER_ID"/>
+	</resultMap>
+	
+	<resultMap type="openchatDto" id="openchatMap">
+		<result property="openname" column="OPENCHAT_NAME"/>
+		<result property="openpw" column="OPENCHAT_PW"/>
+		<result property="openlimit" column="OPENCHAT_LIMIT"/>
+	</resultMap>
+	
+	<resultMap type="myopenchatDto" id="myopenchatMap">
+		<result property="openname" column="MYOPENCHAT_NAME"/>
+		<result property="userid" column="MYOPENCHAT_USERID"/>
+	</resultMap>
+	
+	<resultMap type="dmDto" id="dmMap">
+		<result property="dm_no" column="DM_NO"/>
+		<result property="dm_user_id" column="DM_USER_ID"/>
+		<result property="dm_receiver" column="DM_RECEIVER"/>
+		<result property="dm_status" column="DM_STATUS"/>
+	</resultMap>
+	
+	  <select id="contentList" parameterType="String" resultMap="contentMap">
+      SELECT *
+      FROM CONTENT a
+      JOIN FOLLOW b
+      ON a.CONTENT_USERS_ID = b.FOLLOW_TARGET
+      WHERE b.FOLLOW_ID = #{follow_id} <!-- AND (TRUNC(SYSDATE,'MI')-CONTENT_DATE) * 24 &lt;= 3  -->
+      ORDER BY a.CONTENT_NO DESC
+   </select>
+
+
+	<select id="mycontentlist" parameterType="String"
+		resultMap="contentMap">
+		SELECT *
+		FROM CONTENT
+		WHERE CONTENT_USERS_ID = #{content_users_id}
+		ORDER BY
+		CONTENT_NO DESC
+	</select>
+
+	<insert id="feedinsert" parameterType="contentDto">
+		INSERT INTO CONTENT
+		VALUES(CONTENT_NO.NEXTVAL,#{content_photo},#{content_substance},#{content_place_name}
+		,#{content_place_lat},#{content_place_lon},#{content_users_id},0,0,#{content_hashtag},SYSDATE)
+	</insert>
+
+
+	<select id="weather" parameterType="int" resultMap="contentMap">
+		SELECT *
+		FROM CONTENT
+		WHERE CONTENT_NO =
+		#{content_no}
+	</select>
+
+	<update id="editfeed" parameterType="contentDto">
+		UPDATE CONTENT
+		SET
+		CONTENT_SUBSTANCE = #{content_substance}, CONTENT_PLACE_NAME =
+		#{content_place_name}, CONTENT_PLACE_LAT = #{content_place_lat},
+		CONTENT_PLACE_LON = #{content_place_lon}, CONTENT_PHOTO =
+		#{content_photo} , CONTENT_HASHTAG = #{content_hashtag}, CONTENT_DATE = SYSDATE
+		WHERE CONTENT_NO =
+		#{content_no}
+	</update>
+
+	<delete id="delete" parameterType="int">
+		DELETE FROM CONTENT
+		WHERE
+		CONTENT_NO = #{content_no}
+	</delete>
+
+	<insert id="insertComment" parameterType="reDto">
+		INSERT INTO RE
+		VALUES(RE_NO.NEXTVAL, #{substance}, #{contentno},
+		#{userid})
+	</insert>
+
+	<select id="selectRe" parameterType="int" resultMap="reMap">
+		SELECT
+		RE_NO, RE_SUBSTANCE, RE_CONTENT_NO, RE_USERS_ID
+		FROM RE
+		WHERE
+		RE_CONTENT_NO = ${content_no}
+		ORDER BY RE_NO ASC
+	</select>
+	
+	<select id="commentCount" parameterType="int" resultType="int">
+		SELECT CONTENT_COMMENT_COUNT
+		FROM CONTENT
+		WHERE CONTENT_NO = #{content_no}
+	</select>
+	
+	<update id="countUpComment" parameterType="contentDto">
+		UPDATE CONTENT
+		SET CONTENT_COMMENT_COUNT = #{content_comment_count}
+		WHERE CONTENT_NO = #{content_no}
+	</update>
+
+	<select id="searchUser" parameterType="String"
+		resultMap="contentMap">
+		SELECT * FROM CONTENT
+		WHERE CONTENT_USERS_ID = #{keyword}
+	</select>
+	
+	<select id="hashList" parameterType="String" resultMap="contentMap">
+		SELECT * FROM CONTENT
+		WHERE CONTENT_HASHTAG LIKE '%'||#{hashtag}||'%'
+	</select>
+	
+	<select id="allList" resultMap="contentMap">
+		SELECT * FROM CONTENT
+		ORDER BY CONTENT_DATE DESC, CONTENT_LIKE_COUNT DESC
+	</select>
+
+	<insert id="followinsert" parameterType="followDto">
+		INSERT INTO FOLLOW
+		VALUES(#{follow_id},#{follow_target})
+	</insert>
+	
+	<delete id="followcancel" parameterType="String">
+		DELETE FROM FOLLOW
+		WHERE FOLLOW_TARGET = #{follow_target}
+	</delete>
+
+	<select id="followingList" parameterType="String"
+		resultMap="followMap">
+		SELECT * FROM FOLLOW
+		WHERE FOLLOW_ID = #{follow_id}
+	</select>
+
+	<select id="followerList" parameterType="String"
+		resultMap="followMap">
+		SELECT * FROM FOLLOW
+		WHERE FOLLOW_TARGET = #{follow_target}
+	</select>
+	
+	<select id="followList" parameterType="String" resultMap="followMap">
+		SELECT * FROM FOLLOW
+		WHERE FOLLOW_ID = #{follow_id}
+	</select>
+	
+	<select id="searchCount" parameterType="int" resultType="int">
+		SELECT CONTENT_COMMENT_COUNT
+		FROM CONTENT
+		WHERE CONTENT_NO = #{content_no}
+	</select>
+	
+	<select id="searchcontentList" parameterType="String" resultMap="contentMap">
+      SELECT * FROM CONTENT
+      WHERE CONTENT_PLACE_NAME = #{content_place_name}
+   </select>
+   
+   <delete id="delete_comment" parameterType="int">
+   	DELETE RE
+   	WHERE RE_CONTENT_NO = #{content_no}
+   </delete>
+   
+   <delete id="delete_like" parameterType="int">
+   	DELETE "LIKE"
+   	WHERE LIKE_CONTENT_NO = #{content_no}
+   </delete>
+   
+   <select id="userprofile" parameterType="string" resultType="string">
+   	SELECT USERS_PROFILE
+   	FROM USERS
+   	WHERE USERS_ID = #{content_user_id}
+   </select>
+   
+   <delete id="deleteComment" parameterType="int">
+   		DELETE RE
+   		WHERE RE_NO = #{reno}
+   </delete>
+   
+   <select id="selectRere" parameterType="int" resultMap="reMap">
+		SELECT
+		RE_NO, RE_SUBSTANCE, RE_CONTENT_NO, RE_USERS_ID
+		FROM RE
+		WHERE
+		RE_CONTENT_NO = ${content_no}
+		ORDER BY RE_NO DESC
+	</select>
+	
+	<insert id="save" parameterType="saveDto">
+		INSERT INTO SAVE_CONTENT
+		VALUES(#{save_content_no},#{save_content_photo},#{save_content_substance},#{save_content_place_name}
+		,#{save_content_place_lat},#{save_content_place_lon},#{save_content_users_id},#{save_content_hashtag},#{save_content_date},#{save_user_id},SYSDATE)
+	</insert>
+	
+	<select id="saveList" parameterType="string" resultMap="saveMap">
+		SELECT * FROM SAVE_CONTENT
+		WHERE SAVE_USER_ID = #{users_id}
+		ORDER BY SAVE_DATE DESC
+	</select>
+	
+	<select id="recommend" resultMap="followMap" parameterType="string">
+		SELECT * FROM FOLLOW
+		WHERE FOLLOW_ID IN (SELECT FOLLOW_TARGET FROM FOLLOW WHERE FOLLOW_ID = #{userid})
+	</select>
+
+	<select id="idList" parameterType="String" resultMap="contentMap">
+		SELECT * FROM CONTENT
+		WHERE CONTENT_USERS_ID LIKE #{keyword}||'%'
+	</select>
+	
+	<delete id="savedelete" parameterType="saveDto">
+		DELETE SAVE_CONTENT WHERE SAVE_CONTENT_NO = #{save_content_no} AND SAVE_USER_ID = #{save_user_id}
+	</delete>
+	
+	<insert id="live" parameterType="liveDto">
+		INSERT INTO LIVE_USER
+		VALUES(#{live_user_id}, SYSDATE, #{live_user_profile})
+	</insert>
+	
+	<delete id="livestop" parameterType="string">
+		DELETE LIVE_USER WHERE LIVE_USER_ID = #{live}
+	</delete>
+	
+	<select id="livelist" resultType="liveDto">
+		SELECT LIVE_USER_ID, LIVE_USER_PROFILE FROM LIVE_USER ORDER BY LIVE_START_TIME DESC
+	</select>
+	
+	<insert id="openchatcreate" parameterType="openchatDto">
+		INSERT INTO OPENCHATLIST
+		VALUES(#{openname}, 0, 0)
+	</insert>
+	
+	<select id="openchatlist" resultMap="openchatMap">
+		SELECT * FROM OPENCHATLIST
+	</select>
+	
+	<insert id="openchatinsert" parameterType="myopenchatDto">
+		INSERT INTO MYOPENCHAT
+		VALUES(#{openname}, #{userid})
+	</insert>
+	
+	<select id="myopenchatlist" parameterType="string" resultMap="myopenchatMap">
+		SELECT * FROM MYOPENCHAT WHERE MYOPENCHAT_USERID = #{users_id}
+	</select>
+	
+	<insert id="dminsert" parameterType="dmDto">
+		INSERT INTO DMLIST
+		VALUES (DM_NO.NEXTVAL, #{dm_user_id}, #{dm_receiver},'Y', SYSDATE )
+	</insert>
+	
+	<insert id="dminsert2" parameterType="dmDto">
+		INSERT INTO DMLIST
+		VALUES ((SELECT DM_NO FROM DMLIST WHERE DM_USER_ID = #{dm_user_id} AND DM_RECEIVER = #{dm_receiver}),#{dm_receiver}, #{dm_user_id},'Y', SYSDATE )
+	</insert>
+	
+	<select id="dmlist" parameterType="string" resultMap="dmMap">
+		SELECT * FROM DMLIST WHERE DM_USER_ID =#{dm_user_id} AND DM_STATUS = 'Y'  ORDER BY DM_DATE DESC
+	</select>
+	
+	<delete id="openchatexit" parameterType="myopenchatDto">
+		DELETE MYOPENCHAT WHERE MYOPENCHAT_NAME = #{openname} AND MYOPENCHAT_USERID = #{userid}
+	</delete>
+	
+	<update id="dmexit" parameterType="dmDto">
+		UPDATE DMLIST SET DM_STATUS = 'N' WHERE DM_NO = #{dm_no} AND DM_USER_ID = #{dm_user_id}
+	</update>
+	
+	<select id="dmstatus" parameterType="dmDto" resultType="string">
+		SELECT DM_STATUS FROM DMLIST WHERE DM_USER_ID = #{dm_user_id} AND DM_RECEIVER = #{dm_receiver}
+	</select>
+	
+	<update id="dmstatusupdate" parameterType="dmDto">
+		UPDATE DMLIST SET DM_STATUS = 'Y' WHERE DM_USER_ID = #{dm_user_id} AND DM_RECEIVER = #{dm_receiver}
+	</update>
+	
+	<select id="dmlistall" parameterType="string" resultMap="dmMap">
+		SELECT * FROM DMLIST WHERE DM_USER_ID =#{dm_user_id}  ORDER BY DM_DATE DESC
+	</select>
+	
+	<update id="dmrestatusupdate" parameterType="dmDto">
+		UPDATE DMLIST SET DM_STATUS = 'Y' WHERE DM_USER_ID = #{dm_receiver} AND DM_RECEIVER = #{dm_user_id}
+	</update>
+	
+	<select id="dmrestatus" parameterType="dmDto" resultType="string">
+		SELECT DM_STATUS FROM DMLIST WHERE DM_USER_ID = #{dm_receiver} AND DM_RECEIVER = #{dm_user_id}
+	</select>
+	
+	<select id="newdmstatus" parameterType="dmDto" resultType="string">
+		SELECT DM_STATUS FROM DMLIST WHERE DM_RECEIVER = #{dm_user_id} AND DM_NO = #{dm_no}
+	</select>
+	
+	<update id="newdmstatusupdate" parameterType="dmDto">
+		UPDATE DMLIST SET DM_STATUS = 'Y' WHERE DM_RECEIVER = #{dm_user_id} AND DM_NO = #{dm_no}
+	</update>
+	
+</mapper>

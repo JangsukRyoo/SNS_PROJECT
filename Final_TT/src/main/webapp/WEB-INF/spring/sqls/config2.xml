@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<typeAlias type="com.tt.sns.model.dto.ContentDto" alias="contentDto"/>
+		<typeAlias type="com.tt.sns.model.dto.UsersDto" alias="usersDto"/>
+		<typeAlias type="com.tt.sns.model.dto.ReDto" alias="reDto" />
+		<typeAlias type="com.tt.sns.model.dto.FollowDto" alias="followDto" />
+		<typeAlias type="com.tt.sns.model.dto.LikeDto" alias="likeDto"/>
+		<typeAlias type="com.tt.sns.model.dto.SaveDto" alias="saveDto" />
+		<typeAlias type="com.tt.sns.model.dto.OpenchatsubDto" alias="openchatsubDto"/>
+		<typeAlias type="com.tt.sns.model.dto.MyOpenchatDto" alias="myopenchatDto"/>
+		<typeAlias type="com.tt.sns.model.dto.DmDto" alias="dmDto"/>
+		<typeAlias type="com.tt.sns.model.dto.DmsubDto" alias="dmsubDto"/>
+	</typeAliases>
+	
+	<!-- resource : src/main/resources와 연결 -->
+	<mappers>
+		<mapper resource="/mybatis/maria-mapper.xml" />
+	</mappers>
+</configuration>

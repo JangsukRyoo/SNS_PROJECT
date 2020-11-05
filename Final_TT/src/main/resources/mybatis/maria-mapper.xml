@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="maria">
+	<resultMap type="usersDto" id="usersMariaMap">
+		<result property="users_no" column="USERS_NO" />
+		<result property="users_id" column="USERS_ID" />
+		<result property="users_nickname" column="USERS_NICKNAME" />
+		<result property="users_pw" column="USERS_PW" />
+		<result property="users_name" column="USERS_NAME" />
+		<result property="users_phone" column="USERS_PHONE" />
+		<result property="users_profile" column="USERS_PROFILE" />
+		<result property="users_info" column="USERS_INFO" />
+	</resultMap>
+	
+	<resultMap type="openchatsubDto" id="openchatsubMap">
+		<result property="chat_room" column="CHAT_ROOM"/>
+		<result property="chat_writer" column="CHAT_WRITER"/>
+		<result property="chat_substance" column="CHAT_SUBSTANCE"/>
+		<result property="chat_people" column="CHAT_PEOPLE"/>
+		<result property="chat_status" column="CHAT_STATUS"/>
+		<result property="chat_time" column="CHAT_TIME"/>
+	</resultMap>
+	
+	<resultMap type="dmsubDto" id="dmsubMap">
+		<result property="dm_room" column="DM_ROOM"/>
+		<result property="dm_writer" column="DM_WRITER"/>
+		<result property="dm_receiver" column="DM_RECEIVER"/>
+		<result property="dm_substance" column="DM_SUBSTANCE"/>
+		<result property="dm_status" column="DM_STATUS"/>
+		<result property="dm_date" column="DM_DATE"/>
+	</resultMap>
+	
+	<insert id="insert" parameterType="usersDto">
+		insert into USERS values
+		(nextval(seq),
+		#{users_id},#{users_nickname},#{users_pw},#{users_name},#{users_phone},#{users_profile},'입력하세요')
+	</insert>
+	<insert id="insert2" parameterType="usersDto">
+		insert into USERS values
+		(nextval(seq),
+		#{users_id},#{users_nickname},#{users_pw},#{users_name},#{users_phone},'TT.png','입력하세요')
+	</insert>
+	<update id="editPw" parameterType="usersDto">
+		update USERS
+		set USERS_PW = #{users_pw}
+		where USERS_ID = #{users_id}
+	</update>
+	<update id="profileupdate" parameterType="usersDto">
+		update USERS
+		set USERS_NICKNAME = #{users_nickname}, USERS_PW = #{users_pw}, USERS_PHONE = #{users_phone}, USERS_PROFILE = #{users_profile},USER_INFO = #{user_info}
+		where USERS_ID = #{users_id}
+	</update>
+	<update id="profileupdate2" parameterType="usersDto">
+		update USERS
+		set USERS_NICKNAME = #{users_nickname}, USERS_PW = #{users_pw}, USERS_PHONE = #{users_phone}, USERS_PROFILE = 'TT.png',USER_INFO = #{user_info}
+		where USERS_ID = #{users_id}
+	</update>
+	<update id="statusupdate" parameterType="string">
+		update CHAT_INFO
+		set CHAT_STATUS = 'Y' where CHAT_ROOM = #{openname }
+	</update>
+	<select id="openchatsub" parameterType="string" resultMap="openchatsubMap">
+		select * from CHAT_INFO where CHAT_ROOM = #{openname}
+	</select>
+	
+	
+	<select id="dmsub" parameterType="dmDto" resultMap="dmsubMap">
+		select * from DM where DM_ROOM = #{dm_no} 
+	</select>
+	
+
+</mapper>

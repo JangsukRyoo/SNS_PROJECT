@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="users">
+	<resultMap type="usersDto" id="usersMap">
+		<result property="users_no" column="USERS_NO" />
+		<result property="users_id" column="USERS_ID" />
+		<result property="users_nickname" column="USERS_NICKNAME" />
+		<result property="users_pw" column="USERS_PW" />
+		<result property="users_name" column="USERS_NAME" />
+		<result property="users_phone" column="USERS_PHONE" />
+		<result property="users_profile" column="USERS_PROFILE" />
+		<result property="users_info" column="USERS_INFO" />
+	</resultMap>
+
+	<select id="login" parameterType="usersDto" resultType="usersDto">
+		SELECT * FROM USERS WHERE
+		USERS_ID = #{users_id}
+	</select>
+	<insert id="insert" parameterType="usersDto">
+		INSERT INTO USERS VALUES
+		(USERS_NO.NEXTVAL,
+		#{users_id},#{users_nickname},#{users_pw},#{users_name},#{users_phone},#{users_profile},DEFAULT)
+	</insert>
+	<insert id="insert2" parameterType="usersDto">
+		INSERT INTO USERS VALUES
+		(USERS_NO.NEXTVAL,
+		#{users_id},#{users_nickname},#{users_pw},#{users_name},#{users_phone},'TT.png',DEFAULT)
+	</insert>
+	<select id="userinfo" parameterType="String" resultMap="usersMap">
+		SELECT * FROM USERS
+		WHERE USERS_ID = #{users_id}
+	</select>
+	<update id="profileupdate" parameterType="usersDto">
+		UPDATE USERS
+		SET USERS_NICKNAME = #{users_nickname}, USERS_PW = #{users_pw}, USERS_PHONE = #{users_phone}, USERS_PROFILE = #{users_profile},USER_INFO = #{user_info}
+		WHERE USERS_ID = #{users_id}
+	</update>
+	<update id="profileupdate2" parameterType="usersDto">
+		UPDATE USERS
+		SET USERS_NICKNAME = #{users_nickname}, USERS_PW = #{users_pw}, USERS_PHONE = #{users_phone}, USERS_PROFILE = 'TT.png',USER_INFO = #{user_info}
+		WHERE USERS_ID = #{users_id}
+	</update>
+	<select id="findId" parameterType="usersDto" resultType="usersDto">
+		SELECT * FROM USERS
+		WHERE USERS_NAME = #{users_name}
+		AND USERS_PHONE = #{users_phone}
+	</select>
+	<select id="findPw" parameterType="usersDto" resultType="usersDto">
+		SELECT * FROM USERS
+		WHERE USERS_ID = #{users_id}
+		AND USERS_NAME = #{users_name}
+		AND USERS_PHONE = #{users_phone}
+	</select>
+	<update id="editPw" parameterType="usersDto">
+		UPDATE USERS
+		SET USERS_PW = #{users_pw}
+		WHERE USERS_ID = #{users_id}
+	</update>
+	<select id="phoneChk" parameterType="String" resultType="usersDto">
+		SELECT * FROM USERS
+		WHERE USERS_PHONE = #{users_phone}
+	</select>
+	<select id="userList" parameterType="String" resultMap="usersMap">
+		SELECT * FROM USERS
+		WHERE USERS_ID LIKE '%'||#{users_id}||'%'
+	</select>
+
+</mapper>
