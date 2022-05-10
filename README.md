@@ -5,7 +5,7 @@
 
       Language: Java, HTML,CSS,JavaScript, MyBatis, Node.JS, SQL
        
-       DBMS   : ORACLE DB 11g, Maria DB
+      DBMS   : ORACLE DB 11g, Maria DB
        
       SERVER  : Apache Tomcat 9.0, JavaScript Runtime
       
