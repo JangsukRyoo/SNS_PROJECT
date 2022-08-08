@@ -28,7 +28,6 @@
        실시간 스트리밍을 통해 화상채팅 기능 
  
 주요기능 
-
 메인페이지 <br>
 <img src="https://user-images.githubusercontent.com/70876778/167743733-e9821d4e-d231-491d-8628-556cac8abcf3.jpg" width="300" height="200" >
 <br><br><br>
